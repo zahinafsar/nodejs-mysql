@@ -1,12 +1,13 @@
 const express = require('express');
 const mysql = require('mysql');
 
+
 // Create connection
 const db = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : '123456',
-    database : 'nodemysql'
+    host     : 'bh6rjua5tknrusidykrp-mysql.services.clever-cloud.com',
+    user     : 'us4dxseymiczsz0b',
+    password : 'Rqhy6cPccyfynMCMmPTa',
+    database : 'bh6rjua5tknrusidykrp'
 });
 
 // Connect
@@ -18,6 +19,13 @@ db.connect((err) => {
 });
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({extended : false}));
+app.set('view engine', 'ejs');
+
+app.get('/',(req,res)=>{
+    res.render('index')
+})
 
 // Create DB
 app.get('/createdb', (req, res) => {
@@ -30,44 +38,37 @@ app.get('/createdb', (req, res) => {
 });
 
 // Create table
-app.get('/createpoststable', (req, res) => {
-    let sql = 'CREATE TABLE posts(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))';
+app.post('/createtable', (req, res) => {
+    if (!req.body.table) res.send('text field empty');
+    let sql = `CREATE TABLE ${req.body.table}(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))`;
     db.query(sql, (err, result) => {
         if(err) throw err;
         console.log(result);
-        res.send('Posts table created...');
+        res.send(`${req.body.table} table created...`);
     });
 });
 
-// Insert post 1
-app.get('/addpost1', (req, res) => {
-    let post = {title:'Post One', body:'This is post number one'};
-    let sql = 'INSERT INTO posts SET ?';
+// Insert post 
+app.post('/addpost', (req, res) => {
+    if (!req.body.title || !req.body.body || !req.body.table) res.send('text field empty');
+    let post = {
+        title: req.body.title,
+        body: req.body.body
+    };
+    let sql = `INSERT INTO ${req.body.table} SET ?`;
     let query = db.query(sql, post, (err, result) => {
         if(err) throw err;
         console.log(result);
-        res.send('Post 1 added...');
-    });
-});
-
-// Insert post 2
-app.get('/addpost2', (req, res) => {
-    let post = {title:'Post Two', body:'This is post number two'};
-    let sql = 'INSERT INTO posts SET ?';
-    let query = db.query(sql, post, (err, result) => {
-        if(err) throw err;
-        console.log(result);
-        res.send('Post 2 added...');
+        res.send('Post added...');
     });
 });
 
 // Select posts
-app.get('/getposts', (req, res) => {
-    let sql = 'SELECT * FROM posts';
+app.post('/getposts', (req, res) => {
+    let sql = `SELECT * FROM ${req.body.table}`;
     let query = db.query(sql, (err, results) => {
         if(err) throw err;
-        console.log(results);
-        res.send('Posts fetched...');
+        res.send(results);
     });
 });
 

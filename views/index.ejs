@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>mysql</title>
+</head>
+<body>
+<form action="/createtable" method="post">
+	<input type="text" name="table">
+	<button type="submit">create table</button>
+</form><br>
+<form action="/addpost" method="post">
+	<input type="text" name="table">
+	<input type="text" name="title">
+	<input type="text" name="body">
+	<button type="submit">post</button>
+</form><br>
+<form action="/getposts" method="post">
+	<input type="text" name="table">
+	<button type="submit">get posts</button>
+</form><br>
+</body>
+</html>
